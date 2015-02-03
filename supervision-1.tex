@@ -1,0 +1,84 @@
+\documentclass{supervision}
+\usepackage{course}
+
+\Supervision{1}
+
+\begin{document}
+  \begin{questions}
+    \section*{Definitions}
+    \question In just a few words, define each term and specify what it is
+      useful for.
+      \begin{parts}
+        \part idempotent
+        \part location transparency
+        \part marshalling
+        \part pure, impure names
+        \part batching
+        \part middleware
+        \part clock skew
+        \part clock drift
+      \end{parts}
+
+    \section*{NFS}
+    \question
+      \begin{parts}
+        \part Write a 300-word description of what NFS is, how it works, and
+          when you might use it and why. Please read around the subject a bit.
+          No cut-n-paste from other resources!
+        \part What were the most important changes from NFS v2 to v3? Why were
+          these changes significant, and what were their effects?
+      \end{parts}
+
+    \section*{Time}
+    \question For each of the following uses of time, what does the time need
+      to be measured relative to (e.g. UT1, UTC, and NTP server on a LAN, a
+      local oscillator)?
+      \begin{parts}
+        \part local process scheduling
+        \part local I/O
+        \part network protcols
+        \part cryptographic certificate/ticket generation
+        \part performance profiling
+      \end{parts}
+
+    \section*{NTP}
+    \question Write a Java program which acts as an NTP client and prints the
+      current time, as estimated from the NTP server, to the console whenever
+      it is run. For example:
+
+      \begin{code}{sh}
+        bash $ java -jar current-time.jar
+        Fri Feb 24 15:24:54 GMT 2012
+        bash $
+      \end{code}
+
+      You will need to send UDP packets in an appropriate format to an NTP
+      server. The Computer Lab has a set of NTP servers which you may wish to
+      use:
+
+      \begin{code}{}
+        server ntp0.cl.cam.ac.uk
+        server ntp1a.cl.cam.ac.uk
+        server ntp1b.cl.cam.ac.uk
+        server ntp1c.cl.cam.ac.uk
+        server ntp1d.cl.cam.ac.uk
+      \end{code}
+
+      Please make sure your packets conform to NTP version 3 or later (see RFC
+      1305 or later) and that you don't send more than two packets to the
+      server each time you run your program.
+
+    \section*{Vector clocks}
+    \question
+      \begin{parts}
+        \part Given the sequence of messages below, show the value of the
+          Lamport and vector clocks at each node at each send or receive event
+          it participates in.
+
+          % TABLE HERE
+        \part Using the Lamport and vector clocks calculated above, state
+          whether or not the following events can be determined to have a
+          \emph{happens-before} relationship.
+          % GRAPH HERE
+  \end{questions}
+\end{document}
