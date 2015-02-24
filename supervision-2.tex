@@ -1,0 +1,65 @@
+\documentclass{supervision}
+\usepackage{course}
+
+\Supervision{2}
+
+\begin{document}
+  \begin{questions}
+    \question Read this paper:
+      \url{http://research.google.com/archive/chubby-osdi06.pdf} and summarise
+      the main contributions to the work described in 300 words.
+
+    \question DNS is a good example of a large-scale distributed system.
+      \begin{parts}
+        \part Find out how DNS works and write a 300 word summary.
+
+        \part Provide an estimate for the number of DNS lookups which occur on
+          the Internet in a typical day. How many queries do you think a single
+          4-core server could support?
+
+        \part Describe why the architecture of DNS can support the rate of
+          lookups you estimated in part (b).
+
+        \part Does DNS support strong or weak consistency? Why? How might you
+          demonstrate this one way or another?
+      \end{parts}
+
+    \question You have been given a cluster of standard PCs all connected via
+      Ethernet and the raw location data from 20 million vehicles in the UK
+      for the last full five calendar years. Each location sample of a vehicle
+      is stored as four 32-bit values representing:
+
+      \begin{code}{}
+        <vehicle id>, <timestamp>, <longitude>, <latitude>
+      \end{code}
+
+      A location sample is captured every second the vehicle's engine is
+      running. You have been asked to use the Map-Reduce framework to generate
+      summary statistics of the data.
+
+      \begin{parts}
+        \part Estimate the total number of samples in the data set.
+
+        \part Describe how you would divide up the raw data and distributed it
+          across the hard drives in the PCs.
+
+        \part Describe how you would use the Map-Reduce framework to distribute
+          the processing required to calculate the following statistics:
+
+          \begin{subparts}
+            \subpart The vehicle which drove the most miles
+            \subpart The 20 most frequently visited locations in the UK
+            \subpart The minimum, average and maximum speed on each 1km stretch
+              of UK motorway for each hour of each day in the week
+          \end{subparts}
+
+        \part How many PCs will you need in the cluster to calculate the
+          statistics in a timely fashion?
+      \end{parts}
+
+    \question Describe what role-based access control is. As the managing
+      director of a large bank, describe how you could use role-based access
+      control to manage the risk posed by corrupt employees.
+
+  \end{questions}
+\end{document}
