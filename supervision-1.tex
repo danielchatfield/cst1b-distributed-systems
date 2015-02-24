@@ -10,13 +10,58 @@
       useful for.
       \begin{parts}
         \part idempotent
+          \begin{solution}
+            An operation is idempotent if applying it multiple times results in
+            the same change as doing it once.
+          \end{solution}
+
         \part location transparency
+          \begin{solution}
+            Location transparency is using a logical name to identify a network
+            resource that is independant of physical location.
+          \end{solution}
+
         \part marshalling
+          \begin{solution}
+            Marshalling is the process of transforming an object in memory into
+            a format suitable for storage or transmission.
+
+            It is useful for sending arguments over RMI.
+          \end{solution}
+
         \part pure, impure names
+          \begin{solution}
+            A pure name contains no information such as the location of the
+            named object. In contrast, an impure name does contain such
+            information. An example of a pure name would be a UID such as
+            \lstinline|wngdc7mwad8128a9nxpctbc7j0tmvs6w|. An example of an
+            impure name would be \lstinline|dc584@cam.ac.uk|.
+          \end{solution}
+
         \part batching
+          \begin{solution}
+            Batching is where operations are delayed so that multiple
+            operations can be sent together.
+
+            By batching operations overheads are minimised.
+          \end{solution}
+
         \part middleware
+          \begin{solution}
+            Middleware is a layer between the OS and distributed applications.
+            It hides the complexity of the system and bridges the gap between
+            low-level OS communications and programming langauage abstractions.
+          \end{solution}
+
         \part clock skew
+          \begin{solution}
+            Clock skew is the difference between the times on two clocks.
+          \end{solution}
+
         \part clock drift
+          \begin{solution}
+            Clock drift is the rate at which a clock drifts from perfect time.
+          \end{solution}
       \end{parts}
 
     \section*{NFS}
@@ -25,20 +70,80 @@
         \part Write a 300-word description of what NFS is, how it works, and
           when you might use it and why. Please read around the subject a bit.
           No cut-n-paste from other resources!
+          \begin{solution}
+            NFS is a distributed file system developed at Sun. It allows users
+            to access files on a remote host in the same way they would access
+            local files by providing an abstraction that makes the file access
+            completely transparent to the client.
+
+            When someone accesses a file over NFS the kernerl will make an RPC
+            call to the server machine, marshalling the arguments (user,
+            file handle etc.).
+
+            NFS (v2 and v3) was stateless which meant that faul recovery was
+            easy. If the server crashed then the client would simply have to
+            wait for it to reboot and send the RPC again. If a client crashes,
+            the server does not need to do anything at all - no cleanup is
+            required.
+
+            By deciding to make the protocol stateless, no operation could have
+            implicit arguments (e.g. a read call had to have the filehandler).
+            This had the side effect of making those operations idempotent -
+            rather than requesting the next $x$ bytes, the client had to
+            explicity pass the offset. Idempotency means that the server
+            natively tolerated network packet duplication and RPC retries for
+            those operations.
+
+            There are many reasons why you would want to use NFS, but they all
+            boil down to wanting to have some data on one machine be accessible
+            from other remote machines. This is usually to reduce duplication,
+            ensure consistency or facilitating network backups.
+          \end{solution}
+
         \part What were the most important changes from NFS v2 to v3? Why were
           these changes significant, and what were their effects?
+          \begin{solution}
+            Version 3 added support for
+
+            \begin{itemize}
+              \item 64-bit file sizes and thus files larger than 2GB could be
+                read.
+              \item asynchronous writes (improved performance)
+              \item a READDIRPLUS operation that returned additional data while
+                scanning a directory to minimize the need for further calls.
+              \item TCP was added as a transport which made using NFS over a
+                WAN more feasible
+            \end{itemize}
+          \end{solution}
       \end{parts}
 
     \section*{Time}
     \question For each of the following uses of time, what does the time need
-      to be measured relative to (e.g. UT1, UTC, and NTP server on a LAN, a
+      to be measured relative to (e.g. UT1, UTC, an NTP server on a LAN, a
       local oscillator)?
       \begin{parts}
         \part local process scheduling
+          \begin{solution}
+            A local oscillator
+          \end{solution}
+
         \part local I/O
+          \begin{solution}
+            A local oscillator
+          \end{solution}
+
         \part network protcols
+          \begin{solution}
+            UT1
+          \end{solution}
         \part cryptographic certificate/ticket generation
+          \begin{solution}
+            UT1
+          \end{solution}
         \part performance profiling
+          \begin{solution}
+            A local oscillator
+          \end{solution}
       \end{parts}
 
     \section*{NTP}
@@ -75,10 +180,38 @@
           Lamport and vector clocks at each node at each send or receive event
           it participates in.
 
-          % TABLE HERE
+          \begin{solution}
+            \begin{code}{}
+              ___________________________________________________
+              |      |  LAMPORT  |             VECTOR            |
+              |event | A| B| C| D|   A   |   B   |   C   |   D   |
+              |------+--+--+--+--+-------+-------+-------+-------|
+              |start | 0| 0| 0| 0|0,0,0,0|0,0,0,0|0,0,0,0|0,0,0,0|
+              |------+--+--+--+--+-------+-------+-------+-------|
+              |A -> B| 1| 2| -| -|1,0,0,0|1,1,0,0|   -   |   -   |
+              |A -> C| 2| -| 3| -|2,0,0,0|   -   |2,0,1,0|   -   |
+              |A -> D| 3| -| -| 4|3,0,0,0|   -   |   -   |3,0,0,1|
+              |B -> D| -| 3| -| 5|   -   |1,2,0,0|   -   |3,2,0,2|
+              |B -> C| -| 4| 5| -|   -   |1,3,0,0|2,3,2,0|   -   |
+              |C -> D| -| -| 6| 7|   -   |   -   |2,3,3,0|3,3,3,3|
+              |C -> A| 8| -| 7| -|4,3,4,0|   -   |2,3,4,0|   -   |
+              |A -> B| 9|10| -| -|5,3,4,0|5,4,4,0|   -   |   -   |
+              |C -> B| -|11| 8| -|   -   |5,5,5,0|2,3,5,0|   -   |
+              |------+--+--+--+--+-------+-------+-------+-------|
+              |finish| 9|11| 8| 7|5,3,4,0|5,5,5,0|2,3,5,0|3,3,3,3|
+              |------+--+--+--+--+-------+-------+-------+-------|
+            \end{code}
+          \end{solution}
         \part Using the Lamport and vector clocks calculated above, state
           whether or not the following events can be determined to have a
           \emph{happens-before} relationship.
-          % GRAPH HERE
+          \begin{solution}
+            \begin{enumerate}
+              \part | A -> C | A -> D |   no
+              \part | A -> D | B -> C |   no  
+              \part | B -> C | C -> B |  yes 
+            \end{enumerate}
+          \end{solution}
+      \end{parts}
   \end{questions}
 \end{document}
